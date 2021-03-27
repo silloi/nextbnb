@@ -5,6 +5,12 @@ export default function Home({ properties }) {
 
   console.log(properties);
 
+  const book = async (property) => {
+    const data = await fetch(`http://localhost:3000/api/book?property_id=${property._id}&guest=Ado`)
+    const res = await data.json();
+    console.log(res);
+  }
+
   return (
     <div>
       <Head>
@@ -21,7 +27,7 @@ export default function Home({ properties }) {
         </div>
         <div className="flex flex-row flex-wrap">
           {properties && properties.map(property => (
-            <div className="flex-auto w-1/4 rounded overflow-hidden shadow-lg m-2">
+            <div className="flex-auto w-1/4 rounded overflow-hidden shadow-lg m-2" key={property._id}>
               <img className="w-full" src={property.image} />
               <div className="px-6 py-4">
                 <div className="font-bold text-xl mb-2">{property.name} (Up to {property.guests} guests)</div>
@@ -36,7 +42,9 @@ export default function Home({ properties }) {
               </div>
 
               <div className="text-center py-2 my-2">
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-5 rounded">Book</button>
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-5 rounded"
+                  onClick={() => book(property)}
+                >Book</button>
               </div>
             </div>
           ))}
@@ -49,7 +57,7 @@ export default function Home({ properties }) {
 export async function getServerSideProps(context) {
   const { db } = await connectToDatabase()
 
-  const data = await db.collection("listingsAndReviews").find({}).limit(20).toArray();
+  const data = await db.collection("listingsAndReviews").find({}).limit(50).toArray();
 
   const properties = JSON.parse(JSON.stringify(data));
 
